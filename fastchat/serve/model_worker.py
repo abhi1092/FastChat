@@ -85,9 +85,9 @@ class BaseModelWorker:
             model_path = model_path[:-1]
         self.model_names = model_names or [model_path.split("/")[-1]]
         self.limit_worker_concurrency = limit_worker_concurrency
-        print(conv_template)
         if conv_template:
             self.conv = get_conv_template(conv_template)
+            print(self.conv)
         else:
             self.conv = get_conversation_template(model_path)
         self.conv.sep_style = int(self.conv.sep_style)
