@@ -218,9 +218,6 @@ class ModelWorker(BaseModelWorker):
         )
 
         logger.info(f"Loading the model {self.model_names} on worker {worker_id} ...")
-        print(getattr(kwargs, 'adapter_name', None))
-        print(kwargs)
-        exit()
         self.model, self.tokenizer = load_model(
             model_path,
             device=device,
