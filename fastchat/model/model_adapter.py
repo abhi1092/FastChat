@@ -1634,6 +1634,9 @@ class ForcaV2Adapter(BaseModelAdapter):
 
     def load_model(self, model_path: str, from_pretrained_kwargs: dict, peft_adapter=None):
         tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=True)
+        model_config = AutoConfig.from_pretrained(model_path)
+        print(model_config)
+        exit()
         model = AutoModelForCausalLM.from_pretrained(
             model_path,
             low_cpu_mem_usage=True,
