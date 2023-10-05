@@ -215,10 +215,8 @@ class Conversation:
             return ret
         elif self.sep_style == SeparatorStyle.FORCA_SINGLE_TURN:
             ret = ""
+            print(self.messages)
             for role, message in self.messages[-2:]:
-                print(role, message)
-                print("====")
-                print(self.sep)
                 ret += role + "\n" + message + self.sep
         else:
             raise ValueError(f"Invalid style: {self.sep_style}")
@@ -373,7 +371,7 @@ register_conv_template(
         ),
         offset=2,
         sep_style=SeparatorStyle.FORCA_SINGLE_TURN,
-        # sep="\n",
+        sep="\n",
         stop_str="<|end|>",
     )
 )
