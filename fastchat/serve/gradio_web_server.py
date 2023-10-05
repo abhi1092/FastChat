@@ -84,7 +84,11 @@ conv_templates = {}
 class State:
     def __init__(self, model_name):
         print(conv_templates.keys())
-        self.conv = conv_templates[model_name]#get_conversation_template_(model_name)
+        conv = conv_templates[model_name]#get_conversation_template_(model_name)
+        self.conv = get_conversation_template(model_name)
+        print(type(self.conv))
+        print(conv)
+        print(self.conv)
         self.conv_id = uuid.uuid4().hex
         self.skip_next = False
         self.model_name = model_name
