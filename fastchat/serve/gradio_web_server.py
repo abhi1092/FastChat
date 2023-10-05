@@ -79,11 +79,12 @@ ip_expiration_dict = defaultdict(lambda: 0)
 #     },
 # }
 openai_compatible_models_info = {}
-
+conv_templates = {}
 
 class State:
     def __init__(self, model_name):
-        self.conv = get_conversation_template_(model_name)
+        print(conv_templates.keys())
+        self.conv = conv_templates[model_name]#get_conversation_template_(model_name)
         self.conv_id = uuid.uuid4().hex
         self.skip_next = False
         self.model_name = model_name
@@ -185,7 +186,7 @@ def load_demo_single(models, url_params):
 
 
 def load_demo(url_params, request: gr.Request):
-    global models
+    global models, conv_templates
 
     ip = request.client.host
     logger.info(f"load_demo. ip: {ip}. params: {url_params}")
@@ -199,6 +200,8 @@ def load_demo(url_params, request: gr.Request):
             args.add_claude,
             args.add_palm,
         )
+        conv_templates = {model_name: get_conversation_template_(model_name) for model_name in models}
+
 
     return load_demo_single(models, url_params)
 
@@ -790,6 +793,7 @@ if __name__ == "__main__":
         args.add_claude,
         args.add_palm,
     )
+    conv_templates = {model_name:get_conversation_template_(model_name) for model_name in models}
 
     # Set authorization credentials
     auth = None
