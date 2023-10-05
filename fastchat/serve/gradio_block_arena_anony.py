@@ -321,7 +321,10 @@ def bot_response_multi(
     state1,
     temperature,
     top_p,
+    top_k,
+    do_sample,
     max_new_tokens,
+    repetition_penalty,
     request: gr.Request,
 ):
     logger.info(f"bot_response_multi (anony). ip: {request.client.host}")
@@ -344,7 +347,10 @@ def bot_response_multi(
                 states[i],
                 temperature,
                 top_p,
+                top_k,
+                do_sample,
                 max_new_tokens,
+                repetition_penalty,
                 request,
             )
         )
@@ -447,6 +453,15 @@ Please scroll down and start chatting. The models include both closed-source mod
             interactive=True,
             label="Top P",
         )
+        top_k = gr.Slider(
+            minimum=0,
+            maximum=100,
+            value=50,
+            step=1,
+            interactive=True,
+            label="Top k",
+        )
+        do_sample = gr.Checkbox(label="Do sample ?", info="")
         max_output_tokens = gr.Slider(
             minimum=16,
             maximum=1024,
@@ -454,6 +469,14 @@ Please scroll down and start chatting. The models include both closed-source mod
             step=64,
             interactive=True,
             label="Max output tokens",
+        )
+        repetition_penalty = gr.Slider(
+            minimum=0.0,
+            maximum=5.0,
+            value=1.0,
+            step=0.1,
+            interactive=True,
+            label="Repetition Penalty",
         )
 
     gr.Markdown(acknowledgment_md)
@@ -528,7 +551,7 @@ function (a, b, c, d) {
         states + chatbots + [textbox] + btn_list,
     ).then(
         bot_response_multi,
-        states + [temperature, top_p, max_output_tokens],
+        states + [temperature, top_p, top_k, do_sample, max_output_tokens, repetition_penalty],
         states + chatbots + btn_list,
     ).then(
         flash_buttons, [], btn_list
@@ -540,7 +563,7 @@ function (a, b, c, d) {
         states + chatbots + [textbox] + btn_list,
     ).then(
         bot_response_multi,
-        states + [temperature, top_p, max_output_tokens],
+        states + [temperature, top_p, top_k, do_sample, max_output_tokens, repetition_penalty],
         states + chatbots + btn_list,
     ).then(
         flash_buttons, [], btn_list

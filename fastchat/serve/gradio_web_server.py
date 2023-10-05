@@ -311,6 +311,8 @@ def model_worker_stream_iter(
     temperature,
     repetition_penalty,
     top_p,
+    top_k,
+    do_sample,
     max_new_tokens,
 ):
     # Make requests
@@ -320,6 +322,8 @@ def model_worker_stream_iter(
         "temperature": temperature,
         "repetition_penalty": repetition_penalty,
         "top_p": top_p,
+        "top_k": top_k,
+        "do_sample": do_sample,
         "max_new_tokens": max_new_tokens,
         "stop": conv.stop_str,
         "stop_token_ids": conv.stop_token_ids,
@@ -341,11 +345,17 @@ def model_worker_stream_iter(
             yield data
 
 
-def bot_response(state, temperature, top_p, max_new_tokens, request: gr.Request):
+def bot_response(state, temperature,
+                top_p,
+                top_k,
+                do_sample,
+                max_new_tokens,
+                repetition_penalty, request: gr.Request):
     logger.info(f"bot_response. ip: {request.client.host}")
     start_tstamp = time.time()
     temperature = float(temperature)
     top_p = float(top_p)
+    top_k = float(top_k)
     max_new_tokens = int(max_new_tokens)
 
     if state.skip_next:
@@ -358,7 +368,7 @@ def bot_response(state, temperature, top_p, max_new_tokens, request: gr.Request)
     if model_name == "gpt-3.5-turbo" or model_name == "gpt-4":
         prompt = conv.to_openai_api_messages()
         stream_iter = openai_api_stream_iter(
-            model_name, prompt, temperature, top_p, max_new_tokens
+            model_name, prompt, temperature, top_p, top_k,do_sample, max_new_tokens,repetition_penalty
         )
     elif model_name == "claude-2" or model_name == "claude-instant-1":
         prompt = conv.get_prompt()
@@ -410,8 +420,6 @@ def bot_response(state, temperature, top_p, max_new_tokens, request: gr.Request)
         # Set repetition_penalty
         if "t5" in model_name:
             repetition_penalty = 1.2
-        else:
-            repetition_penalty = 1.0
 
         stream_iter = model_worker_stream_iter(
             conv,
@@ -421,6 +429,8 @@ def bot_response(state, temperature, top_p, max_new_tokens, request: gr.Request)
             temperature,
             repetition_penalty,
             top_p,
+            top_k,
+            do_sample,
             max_new_tokens,
         )
 
