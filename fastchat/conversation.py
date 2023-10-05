@@ -28,6 +28,7 @@ class SeparatorStyle(IntEnum):
     PHOENIX = auto()
     ROBIN = auto()
     FALCON_CHAT = auto()
+    FORCA_SINGLE_TURN = auto()
 
 
 @dataclasses.dataclass
@@ -212,6 +213,10 @@ class Conversation:
                     ret += role + ":"
 
             return ret
+        elif self.sep_style == SeparatorStyle.FORCA_SINGLE_TURN:
+            ret = ""
+            for role, message in self.messages[-2:]:
+                ret += role + "\n" + message + self.sep
         else:
             raise ValueError(f"Invalid style: {self.sep_style}")
 
@@ -364,9 +369,9 @@ register_conv_template(
             ),
         ),
         offset=2,
-        sep_style=SeparatorStyle.ADD_COLON_SINGLE,
-        sep="\n### ",
-        stop_str="###",
+        sep_style=SeparatorStyle.FORCA_SINGLE_TURN,
+        sep="\n",
+        stop_str="<|end|>",
     )
 )
 
