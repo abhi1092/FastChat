@@ -192,7 +192,7 @@ def generate_stream(
 
             output = tokenizer.decode(
                 tmp_output_ids,
-                skip_special_tokens=False,
+                skip_special_tokens=True,
                 spaces_between_special_tokens=False,
                 clean_up_tokenization_spaces=True,
             )
