@@ -83,7 +83,7 @@ openai_compatible_models_info = {}
 
 class State:
     def __init__(self, model_name):
-        self.conv = get_conversation_template(model_name)
+        self.conv = get_conversation_template_(model_name)
         self.conv_id = uuid.uuid4().hex
         self.skip_next = False
         self.model_name = model_name
