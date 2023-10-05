@@ -27,7 +27,7 @@ from fastchat.constants import (
     CONVERSATION_TURN_LIMIT,
     SESSION_EXPIRATION_TIME,
 )
-# from fastchat.model.model_adapter import get_conversation_template
+from fastchat.model.model_adapter import get_conversation_template
 from fastchat.model.model_registry import get_model_info, model_info
 from fastchat.serve.api_provider import (
     anthropic_api_stream_iter,
@@ -106,7 +106,7 @@ class State:
         )
         return base
 
-def get_conversation_template(model_name):
+def get_conversation_template_(model_name):
     ret = requests.post(
         controller_url + "/get_worker_address", json={"model": model_name}
     )
@@ -121,8 +121,6 @@ def get_conversation_template(model_name):
         timeout=WORKER_API_TIMEOUT,
     )
     conv = response.json()["conv"]
-    print(conv)
-    print(type(conv))
     return conv
 
 
