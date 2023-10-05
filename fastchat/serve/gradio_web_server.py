@@ -27,7 +27,7 @@ from fastchat.constants import (
     CONVERSATION_TURN_LIMIT,
     SESSION_EXPIRATION_TIME,
 )
-from fastchat.model.model_adapter import get_conversation_template
+# from fastchat.model.model_adapter import get_conversation_template
 from fastchat.model.model_registry import get_model_info, model_info
 from fastchat.serve.api_provider import (
     anthropic_api_stream_iter,
@@ -105,6 +105,25 @@ class State:
             }
         )
         return base
+
+def get_conversation_template(model_name):
+    ret = requests.post(
+        controller_url + "/get_worker_address", json={"model": model_name}
+    )
+    worker_addr = ret.json()["address"]
+    logger.info(f"Getting conv template for model_name: {model_name}, from worker_addr: {worker_addr}")
+
+    response = requests.post(
+        worker_addr + "/worker_get_conv_template",
+        headers=headers,
+        json={'model_name': model_name},
+        stream=True,
+        timeout=WORKER_API_TIMEOUT,
+    )
+    conv = response.json()["conv"]
+    print(conv)
+    print(type(conv))
+    return conv
 
 
 def set_global_vars(controller_url_, enable_moderation_):
