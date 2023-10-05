@@ -68,7 +68,9 @@ def generate_stream(
 ):
     if hasattr(model, "device"):
         device = model.device
-
+    print("+++++++++++++++++++++++++")
+    print(params)
+    print("+++++++++++++++++++++++++")
     # Read parameters
     prompt = params["prompt"]
     len_prompt = len(prompt)
