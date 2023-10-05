@@ -215,9 +215,11 @@ class Conversation:
             return ret
         elif self.sep_style == SeparatorStyle.FORCA_SINGLE_TURN:
             ret = ""
-            print(self.messages)
             for role, message in self.messages[-2:]:
-                ret += role + "\n" + message + self.sep
+                if message:
+                    ret += role + "\n" + message + self.sep
+                else:
+                    ret += role + "\n"
         else:
             raise ValueError(f"Invalid style: {self.sep_style}")
 
