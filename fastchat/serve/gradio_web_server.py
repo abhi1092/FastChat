@@ -85,7 +85,7 @@ conv_templates = {}
 class State:
     def __init__(self, model_name):
         print(conv_templates.keys())
-        conv = conv_templates[model_name]#get_conversation_template_(model_name)
+        conv = get_conversation_template_(model_name)
         self.conv = get_conv_template(conv['name'])
         print(type(self.conv))
         print(conv)
