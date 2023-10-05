@@ -28,6 +28,7 @@ from fastchat.constants import (
     SESSION_EXPIRATION_TIME,
 )
 from fastchat.model.model_adapter import get_conversation_template
+from fastchat.conversation import Conversation, get_conv_template
 from fastchat.model.model_registry import get_model_info, model_info
 from fastchat.serve.api_provider import (
     anthropic_api_stream_iter,
@@ -85,7 +86,7 @@ class State:
     def __init__(self, model_name):
         print(conv_templates.keys())
         conv = conv_templates[model_name]#get_conversation_template_(model_name)
-        self.conv = get_conversation_template(model_name)
+        self.conv = get_conv_template(conv['name'])
         print(type(self.conv))
         print(conv)
         print(self.conv)
