@@ -384,7 +384,7 @@ register_conv_template(
             ),
         ),
         offset=2,
-        sep_style=SeparatorStyle.CFT_SINGLE_TURN,
+        sep_style=SeparatorStyle.FORCA_SINGLE_TURN,
         sep="\n",
         stop_str="<|end|>",
     )
@@ -413,7 +413,7 @@ register_conv_template(
             ),
         ),
         offset=2,
-        sep_style=SeparatorStyle.FORCA_SINGLE_TURN,
+        sep_style=SeparatorStyle.CFT_SINGLE_TURN,
         sep="\n",
         stop_str="\n\nEND_KEY",
     )
