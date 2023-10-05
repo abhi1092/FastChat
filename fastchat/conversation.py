@@ -220,7 +220,6 @@ class Conversation:
                     ret += role + "\n" + message + self.sep
                 else:
                     ret += role + "\n"
-            print(ret)
             return ret
         else:
             raise ValueError(f"Invalid style: {self.sep_style}")
