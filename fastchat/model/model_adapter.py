@@ -25,7 +25,7 @@ from transformers import (
     LlamaForCausalLM,
     T5Tokenizer,
 )
-
+from megatron_models import GPTMegatronForCausalLM
 from fastchat.constants import CPU_ISA
 from fastchat.modules.gptq import GptqConfig, load_gptq_quantized
 from fastchat.modules.awq import AWQConfig, load_awq_quantized
@@ -1632,19 +1632,21 @@ class ForcaV2Adapter(BaseModelAdapter):
     def match(self, model_path: str):
         return "forca" in model_path
 
-    def load_model(self, model_path: str, from_pretrained_kwargs: dict, peft_adapter=None):
+    def load_model(self, model_path: str, from_pretrained_kwargs: dict):
         tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=True)
-        model_config = AutoConfig.from_pretrained(model_path)
-        print(model_config)
-        exit()
-        model = AutoModelForCausalLM.from_pretrained(
-            model_path,
-            low_cpu_mem_usage=True,
-            **from_pretrained_kwargs,
-        )
-        if peft_adapter is not None:
-            print("Loading Peft model")
-            model = PeftModel.from_pretrained(model, peft_adapter)
+        try:
+            model = AutoModelForCausalLM.from_pretrained(
+                model_path,
+                low_cpu_mem_usage=True,
+                **from_pretrained_kwargs,
+            )
+        except:
+            # It is probably a megatron model
+            model = GPTMegatronForCausalLM.from_pretrained(
+                model_path,
+                low_cpu_mem_usage=True,
+                **from_pretrained_kwargs,
+            )
         # 50277 means "### End"
         print(model)
         if "dolly-v2" in model_path:
