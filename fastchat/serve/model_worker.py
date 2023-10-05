@@ -228,6 +228,7 @@ class ModelWorker(BaseModelWorker):
             cpu_offloading=cpu_offloading,
             gptq_config=gptq_config,
             awq_config=awq_config,
+            adapter_name=getattr(kwargs, 'adapter_name', None)
         )
         self.device = device
         if self.tokenizer.pad_token == None:
@@ -466,6 +467,7 @@ def create_model_worker():
     parser.add_argument("--host", type=str, default="localhost")
     parser.add_argument("--port", type=int, default=21002)
     parser.add_argument("--worker-address", type=str, default="http://localhost:21002")
+    parser.add_argument("--adapter_name", type=str, default='forca', help="What adapter  to use")
     parser.add_argument(
         "--controller-address", type=str, default="http://localhost:21001"
     )
@@ -535,6 +537,7 @@ def create_model_worker():
         conv_template=args.conv_template,
         embed_in_truncate=args.embed_in_truncate,
         seed=args.seed,
+        adapter_name=args.adapter_name
     )
     return args, worker
 

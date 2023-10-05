@@ -102,7 +102,7 @@ def register_model_adapter(cls):
 
 
 @cache
-def get_model_adapter(model_path: str) -> BaseModelAdapter:
+def get_model_adapter(model_path: str, adapter_name=None) -> BaseModelAdapter:
     """Get a model adapter for a model_path."""
     model_path_basename = os.path.basename(os.path.normpath(model_path))
 
@@ -113,7 +113,9 @@ def get_model_adapter(model_path: str) -> BaseModelAdapter:
 
     # Then try the full path
     for adapter in model_adapters:
-        if adapter.match(model_path):
+        if adapter.match(model_path) or (adapter_name is not None and adapter.match(adapter_name)):
+            print(adapter)
+            exit()
             return adapter
 
     raise ValueError(f"No valid model adapter for {model_path}")
@@ -157,10 +159,11 @@ def load_model(
     awq_config: Optional[AWQConfig] = None,
     revision: str = "main",
     debug: bool = False,
+    adapter_name=None,
 ):
     """Load a model from Hugging Face."""
     # get model adapter
-    adapter = get_model_adapter(model_path)
+    adapter = get_model_adapter(model_path, adapter_name)
 
     # Handle device mapping
     cpu_offloading = raise_warning_for_incompatible_cpu_offloading_configuration(
@@ -1625,6 +1628,31 @@ class PhindCodeLlamaAdapter(CodeLlamaAdapter):
         return get_conv_template("phind")
 
 
+class ForcaV2Adapter(BaseModelAdapter):
+    """The model adapter for databricks/dolly-v2-12b"""
+
+    def match(self, model_path: str):
+        return "forca" in model_path
+
+    def load_model(self, model_path: str, from_pretrained_kwargs: dict, peft_adapter=None):
+        tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=True)
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path,
+            low_cpu_mem_usage=True,
+            **from_pretrained_kwargs,
+        )
+        if peft_adapter is not None:
+            print("Loading Peft model")
+            model = PeftModel.from_pretrained(model, peft_adapter)
+        # 50277 means "### End"
+        print(model)
+        if "dolly-v2" in model_path:
+            tokenizer.eos_token_id = 50277
+        return model, tokenizer
+
+    def get_default_conv_template(self, model_path: str) -> Conversation:
+        return get_conv_template("dolly_v2")
+
 # Note: the registration order matters.
 # The one registered earlier has a higher matching priority.
 register_model_adapter(PeftModelAdapter)
@@ -1684,6 +1712,7 @@ register_model_adapter(OpenLLaMaOpenInstructAdapter)
 register_model_adapter(ReaLMAdapter)
 register_model_adapter(PhindCodeLlamaAdapter)
 register_model_adapter(CodeLlamaAdapter)
+register_model_adapter(ForcaV2Adapter)
 
 # After all adapters, try the default base adapter.
 register_model_adapter(BaseModelAdapter)
