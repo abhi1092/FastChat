@@ -371,7 +371,7 @@ register_conv_template(
         ),
         offset=2,
         sep_style=SeparatorStyle.FORCA_SINGLE_TURN,
-        sep="\n",
+        # sep="\n",
         stop_str="<|end|>",
     )
 )
