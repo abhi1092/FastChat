@@ -29,6 +29,7 @@ class SeparatorStyle(IntEnum):
     ROBIN = auto()
     FALCON_CHAT = auto()
     FORCA_SINGLE_TURN = auto()
+    CFT_SINGLE_TURN = auto()
 
 
 @dataclasses.dataclass
@@ -221,6 +222,16 @@ class Conversation:
                 else:
                     ret += role + "\n"
             return ret
+        elif self.sep_style == SeparatorStyle.CFT_SINGLE_TURN:
+            ret = ""
+            if self.system_message:
+                ret += system_prompt
+            for role, message in self.messages[-2:]:
+                if message:
+                    ret += '\n\n' + role + ":" + message + self.sep
+                else:
+                    ret += '\n\n' + role + ":"
+            return ret
         else:
             raise ValueError(f"Invalid style: {self.sep_style}")
 
@@ -373,9 +384,38 @@ register_conv_template(
             ),
         ),
         offset=2,
-        sep_style=SeparatorStyle.FORCA_SINGLE_TURN,
+        sep_style=SeparatorStyle.CFT_SINGLE_TURN,
         sep="\n",
         stop_str="<|end|>",
+    )
+)
+
+# CFT delivery conversation template
+register_conv_template(
+    Conversation(
+        name="cft-old",
+        system_message="Below are a series of dialogues between various people and an AI assistant. The AI tries to be helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable. The assistant is happy to help with almost anything, and will do its best to understand exactly what is needed. It also tries to avoid giving false or misleading information, and it caveats when it isn't entirely sure about the right answer. Moreover, the assistant prioritizes caution over usefulness, refusing to answer questions that it considers unsafe, immoral, unethical or dangerous.",
+        roles=("Human", "Assistant"),
+        messages=(
+            (
+                "<|user|>",
+                "Generate Ansible task.",
+            ),
+            (
+                "<|assistant|>",
+                """
+- name: Get information from K8s
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Namespace
+  register: ns
+                """,
+            ),
+        ),
+        offset=2,
+        sep_style=SeparatorStyle.FORCA_SINGLE_TURN,
+        sep="\n",
+        stop_str="\n\nEND_KEY",
     )
 )
 
