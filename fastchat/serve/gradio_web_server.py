@@ -644,6 +644,15 @@ def build_single_model_ui(models, add_promotion_links=False):
             interactive=True,
             label="Top P",
         )
+        top_k = gr.Slider(
+            minimum=0,
+            maximum=100,
+            value=50,
+            step=1,
+            interactive=True,
+            label="Top k",
+        )
+        do_sample = gr.Checkbox(label="Do sample ?", info="")
         max_output_tokens = gr.Slider(
             minimum=16,
             maximum=1024,
@@ -651,6 +660,14 @@ def build_single_model_ui(models, add_promotion_links=False):
             step=64,
             interactive=True,
             label="Max output tokens",
+        )
+        repetition_penalty = gr.Slider(
+            minimum=0.0,
+            maximum=5.0,
+            value=1.0,
+            step=0.1,
+            interactive=True,
+            label="Repetition Penalty",
         )
 
     if add_promotion_links:
@@ -686,7 +703,7 @@ def build_single_model_ui(models, add_promotion_links=False):
         add_text, [state, model_selector, textbox], [state, chatbot, textbox] + btn_list
     ).then(
         bot_response,
-        [state, temperature, top_p, max_output_tokens],
+        [state, temperature, top_p, top_k,do_sample, max_output_tokens, repetition_penalty],
         [state, chatbot] + btn_list,
     )
     send_btn.click(
@@ -695,7 +712,7 @@ def build_single_model_ui(models, add_promotion_links=False):
         [state, chatbot, textbox] + btn_list,
     ).then(
         bot_response,
-        [state, temperature, top_p, max_output_tokens],
+        [state, temperature, top_p, top_k,do_sample, max_output_tokens, repetition_penalty],
         [state, chatbot] + btn_list,
     )
 
