@@ -216,11 +216,19 @@ class Conversation:
             return ret
         elif self.sep_style == SeparatorStyle.FORCA_SINGLE_TURN:
             ret = ""
-            for role, message in self.messages[-2:]:
-                if message:
-                    ret += role + "\n" + message + self.sep
-                else:
-                    ret += role + "\n"
+            # Check if context and user token are already there just slap assistant token
+            input_to_model = self.messages[-2]
+            assert input_to_model[0] == '<|user|>'
+            context_token = '<|context|>'
+            if context_token in input_to_model[1]:
+                ret += input_to_model[1] + '\n<|assistant|>\n'
+            else:
+                ret += '<|user|>\n' + input_to_model[1] + '\n<|assistant|>\n'
+                # for role, message in self.messages[-2:]:
+                #     if message:
+                #         ret += role + "\n" + message + self.sep
+                #     else:
+                #         ret += role + "\n"
             return ret
         elif self.sep_style == SeparatorStyle.CFT_SINGLE_TURN:
             ret = ""
