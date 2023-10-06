@@ -235,12 +235,15 @@ def add_text(
 
 
 def bot_response_multi(
-    state0,
-    state1,
-    temperature,
-    top_p,
-    max_new_tokens,
-    request: gr.Request,
+        state0,
+        state1,
+        temperature,
+        top_p,
+        top_k,
+        do_sample,
+        max_new_tokens,
+        repetition_penalty,
+        request: gr.Request,
 ):
     logger.info(f"bot_response_multi (named). ip: {request.client.host}")
 
@@ -262,7 +265,10 @@ def bot_response_multi(
                 states[i],
                 temperature,
                 top_p,
+                top_k,
+                do_sample,
                 max_new_tokens,
+                repetition_penalty,
                 request,
             )
         )
