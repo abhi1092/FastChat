@@ -514,7 +514,7 @@ Please scroll down and start chatting. The models include both closed-source mod
         regenerate, states, states + chatbots + [textbox] + btn_list
     ).then(
         bot_response_multi,
-        states + [temperature, top_p, max_output_tokens],
+        states + [temperature, top_p,  top_k, do_sample, max_output_tokens, repetition_penalty],
         states + chatbots + btn_list,
     ).then(
         flash_buttons, [], btn_list
